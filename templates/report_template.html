@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <style>
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 700px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-top: 5px solid #005195; }
+        .header { text-align: center; padding-bottom: 20px; border-bottom: 1px solid #eee; margin-bottom: 25px; }
+        .header h1 { color: #005195; margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 1px; }
+        .header p { color: #666; margin-top: 5px; font-style: italic; }
+        
+        .kpi-container { display: flex; justify-content: space-between; margin-bottom: 30px; }
+        .kpi-box { text-align: center; flex: 1; padding: 15px; background-color: #f9fbfd; border-radius: 6px; margin: 0 5px; border: 1px solid #e1e8ed; }
+        .kpi-value { font-size: 28px; font-weight: bold; color: #005195; display: block; }
+        .kpi-label { font-size: 12px; color: #666; text-transform: uppercase; margin-top: 5px; }
+        .kpi-delta { font-size: 11px; margin-top: 2px; }
+        .delta-up { color: #28a745; }
+        .delta-down { color: #dc3545; }
+
+        .section-title { font-size: 18px; color: #333; border-left: 4px solid #005195; padding-left: 10px; margin: 25px 0 15px; font-weight: bold; }
+        
+        .chart-container { text-align: center; margin: 20px 0; }
+        .chart-container img { max-width: 100%; height: auto; border-radius: 4px; border: 1px solid #eee; }
+
+        .problem-impact { background-color: #fff5f5; border: 1px solid #feb2b2; padding: 15px; border-radius: 6px; margin-bottom: 25px; }
+        .problem-text { font-size: 14px; line-height: 1.5; color: #c53030; }
+        .problem-text strong { font-size: 16px; }
+
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .data-table th { text-align: left; background-color: #f8fafc; color: #4a5568; font-size: 12px; text-transform: uppercase; padding: 10px; border-bottom: 2px solid #edf2f7; }
+        .data-table td { padding: 10px; border-bottom: 1px solid #edf2f7; font-size: 14px; }
+        .data-table tr:last-child td { border-bottom: none; }
+        
+        .footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; font-size: 11px; color: #999; }
+        .tag-pill { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; color: white; margin-left: 5px; }
+        .tag-positive { background-color: #28a745; }
+        .tag-negative { background-color: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{{ title }} Report</h1>
+            <p>Performance Analysis | {{ period }}</p>
+        </div>
+
+        {% if ai_insights %}
+        <div style="background-color: #f8fafc; border: 1px solid #005195; border-radius: 8px; padding: 20px; margin-bottom: 30px; border-left: 8px solid #005195;">
+            <div style="color: #005195; font-weight: bold; font-size: 14px; margin-bottom: 10px; display: flex; align-items: center;">
+                <span style="margin-right: 8px;">✨</span> AI EXECUTIVE INSIGHTS
+            </div>
+            <p style="font-size: 15px; line-height: 1.6; color: #1a202c; margin-bottom: 15px; font-weight: 500;">
+                {{ ai_insights.ceo_summary }}
+            </p>
+            <div style="display: flex; gap: 10px;">
+                {% for step in ai_insights.action_plan %}
+                <div style="flex: 1; background: white; padding: 10px; border-radius: 4px; font-size: 12px; border: 1px solid #e2e8f0; color: #4a5568;">
+                    <strong>Step {{ loop.index }}:</strong> {{ step }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- KPI Row -->
+        <div class="kpi-container">
+            <div class="kpi-box">
+                <span class="kpi-value">{{ kpis.nps }}</span>
+                <span class="kpi-label">NPS Score</span>
+            </div>
+            <div class="kpi-box">
+                <span class="kpi-value">{{ kpis.osat }}</span>
+                <span class="kpi-label">Overall OSAT</span>
+            </div>
+            <div class="kpi-box">
+                <span class="kpi-value">{{ kpis.responses }}</span>
+                <span class="kpi-label">Responses</span>
+            </div>
+        </div>
+
+        <div class="section-title">Performance Drivers</div>
+        <div class="chart-container">
+            <img src="{{ chart_path }}" alt="Drivers Analysis Chart">
+        </div>
+
+        {% if problem_impact %}
+        <div class="section-title">The "Problem Tax" Impact</div>
+        <div class="problem-impact">
+            <p class="problem-text">
+                <strong>{{ problem_impact.rate }}%</strong> of guests experienced a problem. 
+                Average NPS for these guests was <strong>{{ problem_impact.nps_with_problem }}</strong>, 
+                compared to <strong>{{ problem_impact.nps_without_problem }}</strong> for those who didn't. 
+                <br><br>
+                <em>Potential NPS Gain if resolved: +{{ problem_impact.potential_gain }} points.</em>
+            </p>
+        </div>
+        {% endif %}
+
+        <div class="section-title">Geographic Performance (States)</div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>State</th>
+                    <th>NPS Score</th>
+                    <th>OSAT</th>
+                    <th>Responses</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for state in top_states %}
+                <tr>
+                    <td>{{ state.name }}</td>
+                    <td>
+                        {{ state.nps }}
+                        {% if state.nps >= 8 %}<span class="tag-pill tag-positive">High</span>
+                        {% elif state.nps <= 5 %}<span class="tag-pill tag-negative">Alert</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ state.osat }}</td>
+                    <td>{{ state.responses }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="section-title">Voice of the Customer</div>
+        <div style="display: flex; gap: 20px;">
+            <div style="flex: 1; background-color: #f0fff4; border: 1px solid #c6f6d5; padding: 10px; border-radius: 6px;">
+                <p style="color: #2f855a; font-weight: bold; font-size: 13px; margin-top: 0;">What Guests Love</p>
+                {% for comment in positive_comments %}
+                <p style="font-size: 12px; font-style: italic; color: #38a169; border-bottom: 1px solid #c6f6d5; padding-bottom: 5px;">"{{ comment[:150] }}..."</p>
+                {% endfor %}
+            </div>
+            <div style="flex: 1; background-color: #fff5f5; border: 1px solid #fed7d7; padding: 10px; border-radius: 6px;">
+                <p style="color: #c53030; font-weight: bold; font-size: 13px; margin-top: 0;">Top Pain Points</p>
+                {% for comment in negative_comments %}
+                <p style="font-size: 12px; font-style: italic; color: #e53e3e; border-bottom: 1px solid #fed7d7; padding-bottom: 5px;">"{{ comment[:150] }}..."</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="footer">
+            StayPulse Analysis Engine &copy; 2026 | Wyndham Hotels & Resorts Confidental
+        </div>
+    </div>
+</body>
+</html>
