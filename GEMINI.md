@@ -53,6 +53,8 @@ The project is contained within a Jupyter Notebook. You can run it using:
 - The `final_data.csv` is the primary dataset and should be kept in the root directory.
 - Avoid committing large datasets to version control if possible (use `.gitignore`).
 
+
+##test re,mvoe this line
 ### Project Structure
 - `EDA.ipynb`: Main analysis script and results.
 - `final_data.csv`: Input dataset (262k+ records).
